@@ -390,3 +390,18 @@ test('nanoprocess() - pipe stdio', (t) => {
     })
   })
 })
+
+test.only('nanoprocess() - stdout works', t => {
+  const child = nanoprocess('echo', ['foo'])
+  child.open((err) => {
+    t.error(err)
+    let timeout = setTimeout(() => {
+      t.error(new Error('Data was not received'))
+    }, 100)
+    child.process.stdout.once('data', data => {
+      t.equal(data.toString(), 'foo\n')
+      clearTimeout(timeout)
+      t.end()
+    })
+  })
+})
